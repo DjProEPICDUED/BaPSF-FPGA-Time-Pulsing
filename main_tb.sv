@@ -2,35 +2,46 @@
 
 module main_tb;
 	logic clk_100mhz;
-	logic n_rst;
+    logic clk_200mhz;
+	logic rst;
 	logic trigger;
 	logic add5ns;
 	logic sub5ns;
 	logic [9:0] output_pulse;
     logic locked;
 
+	logic led4_r, led4_g, led4_b;
+
 	top dut (
 		.clk_100mhz(clk_100mhz),
-		.n_rst(n_rst),
+		.rst(rst),
 		.trigger(trigger),
 		.add5ns(add5ns),
 		.sub5ns(sub5ns),
 		.output_pulse(output_pulse),
-        .locked(locked)
+        .locked(locked),
+
+		.led4_r(led4_r),
+        .led4_g(led4_g),
+        .led4_b(led4_b)
 	);
 
 	// 100 MHz clock (10 ns period)
 	initial clk_100mhz = 1'b0;
 	always #5 clk_100mhz = ~clk_100mhz;
 
+	// 200 MHz clock (5 ns period)
+	initial clk_200mhz = 1'b0;
+	always #2.5 clk_200mhz = ~clk_200mhz;
+
 	initial begin
-		n_rst = 1'b0;
+		rst = 1'b0;
 		trigger = 1'b0;
 		add5ns = 1'b0;
 		sub5ns = 1'b0;
 
 		#50;
-		n_rst = 1'b1;
+		rst = 1'b1;
 
         @(posedge locked);
 		#100;

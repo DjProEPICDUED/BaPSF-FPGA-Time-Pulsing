@@ -34,23 +34,21 @@ module timePulser #(
             ten_ns_input_d <= ten_ns_input;
 
             if (!active) begin
-                count       <= 0;
+                count <= 0;
                 channel_idx <= '0;
                 
-                // Trigger on the rising edge of ten_ns_input
                 if (ten_ns_input && !ten_ns_input_d) begin
                     active <= 1'b1;
                     
                     if (add5ns && !sub5ns) begin
                         delay_cycles <= BASE_CYCLES + 1;
                     end else if (sub5ns && !add5ns && BASE_CYCLES > 1) begin
-                        delay_cycles <= BASE_CYCLES - 1; // Subtract 1, bounded to minimum of 1
+                        delay_cycles <= BASE_CYCLES - 1; 
                     end else begin
-                        delay_cycles <= BASE_CYCLES;    // Default if neither or both are asserted
+                        delay_cycles <= BASE_CYCLES;  
                     end
                 end
             end else begin
-                // Counting phase
                 if (count >= (delay_cycles - 1)) begin
                     count <= 0;
                     if (channel_idx == (NUM_CHANNELS - 1)) begin
