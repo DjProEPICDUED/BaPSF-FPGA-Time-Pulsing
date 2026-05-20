@@ -1,6 +1,6 @@
 # BaPSF-FPGA-Time-Pulsing
 
-We’re building a high-speed multi-channel pulse propagation system using an Arty A7-100T FPGA to generate precisely timed pulses (around 50 ns) that sequentially switch MOSFET-driven coils/channels. The project focuses on achieving extremely accurate inter-channel timing and understanding propagation effects, transmission-line behavior, and hardware limitations using techniques like MMCMs, delay lines, and phase-shifted clocks.
+We’re building a high-speed multi-channel pulse propagation system using an Arty A7-100T FPGA to generate precisely timed pulses (around 50 ns) that sequentially switch MOSFET-driven coils/channels. The project focuses on achieving extremely accurate inter-channel timing and understanding propagation effects, transmission-line behavior, and hardware limitations using techniques like MMCMs, delay lines, and phase-shifted clocks. The user has the ability to change the length of the pulse by plus minus 0.5 ns by pressing buttons on the FPGA dev board. (e.g. change the pulse width from 50ns to 50.5 ns). This is done using MMCM where two clk domains are phase shifted and one is the posedge of the pulse and the ohter is the negedge. 
 
 
 

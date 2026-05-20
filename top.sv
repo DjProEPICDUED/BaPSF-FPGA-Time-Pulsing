@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module top (
     input  wire  clk_100mhz,
     input  logic rst,   
@@ -25,6 +27,7 @@ module top (
     // MMCM Dynamic Phase Shift Interface wires
     wire psen, psincdec, psdone;
 
+    //clk_wiz_0_clk_wiz clk_multiplier (
     clk_wiz_0 clk_multiplier (
         .clk_in1(clk_100mhz),
         .clk_out1(clk_base_200mhz),     // 200 MHz, 0 phase shift

@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module dual_timePulser #(
     parameter int unsigned NUM_CHANNELS = 10,
     parameter int unsigned DELAY_CYCLES = 10 // 10 cycles of 200MHz = 50ns base

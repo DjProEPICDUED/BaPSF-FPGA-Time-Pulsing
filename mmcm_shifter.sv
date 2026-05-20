@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module mmcm_shifter (
     input  logic clk_100mhz, // psclk must run on the base board clock
     input  logic n_rst,
