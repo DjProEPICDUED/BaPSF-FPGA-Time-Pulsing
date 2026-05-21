@@ -8,7 +8,6 @@ module main_tb;
     // Inputs to DUT
     logic clk_100mhz;
     logic rst;
-    logic trigger;
     logic ext_btn_signal;
     logic btn_add_time;
     logic btn_sub_time;
@@ -16,6 +15,11 @@ module main_tb;
     // Outputs from DUT
     logic [9:0] output_pulse;
     logic locked;
+    logic triggerOut1;
+    logic triggerOut2;
+    logic triggerOut3;
+    logic triggerOut4;
+    logic triggerOut5;
     logic led4_r;
     logic led4_g;
     logic led4_b;
@@ -34,12 +38,16 @@ module main_tb;
     top dut (
         .clk_100mhz     (clk_100mhz),
         .rst            (rst),
-        .trigger        (trigger),
         .ext_btn_signal (ext_btn_signal),
         .btn_add_time   (btn_add_time),
         .btn_sub_time   (btn_sub_time),
         .output_pulse   (output_pulse),
         .locked         (locked),
+        .triggerOut1    (triggerOut1),
+        .triggerOut2    (triggerOut2),
+        .triggerOut3    (triggerOut3),
+        .triggerOut4    (triggerOut4),
+        .triggerOut5    (triggerOut5),
         .led4_r         (led4_r),
         .led4_g         (led4_g),
         .led4_b         (led4_b)
@@ -49,14 +57,36 @@ module main_tb;
     // Verification Tasks
     // =========================================================================
 
-    // Task: Pulse the trigger for a programmable width (ns)
-    task automatic fire_trigger(input int unsigned width_ns);
+    // Task: Press the external button for a programmable width (ns)
+    task automatic press_ext_button(input int unsigned width_ns);
         begin
-            $display("[%0t] Firing Trigger for %0d ns...", $time, width_ns);
-            trigger = 1'b1;
+            $display("[%0t] Pressing external button for %0d ns...", $time, width_ns);
+            ext_btn_signal = 1'b1;
             #(width_ns);
-            trigger = 1'b0;
-            $display("[%0t] Trigger released. Waiting for pulse sequence...", $time);
+            ext_btn_signal = 1'b0;
+            $display("[%0t] External button released.", $time);
+        end
+    endtask
+
+    // Task: Verify that triggerOut pins and first pulse align on same cycle
+    task automatic verify_trigger_alignment(input string testname);
+        event trig_event;
+        begin
+            fork
+                begin
+                    @(posedge triggerOut1);
+                    -> trig_event;
+                end
+                begin
+                    #500000; // timeout 500 us
+                    $fatal("Timeout waiting for trigger outputs (%s)", testname);
+                end
+            join_any
+            @(trig_event);
+            if (output_pulse[0] !== 1'b1)
+                $error("[%0t] %s: First pulse not aligned with trigger outputs", $time, testname);
+            if (!(triggerOut1 && triggerOut2 && triggerOut3 && triggerOut4 && triggerOut5))
+                $error("[%0t] %s: One or more triggerOutX signals not asserted", $time, testname);
         end
     endtask
 
@@ -94,7 +124,6 @@ module main_tb;
 
         // 1. Initialize all inputs
         rst            = 1'b1; // Assert reset
-        trigger        = 1'b0;
         ext_btn_signal = 1'b0;
         btn_add_time   = 1'b0;
         btn_sub_time   = 1'b0;
@@ -123,8 +152,8 @@ module main_tb;
 
         // 5. Test 1: Fire the base frequency sequence (50.0 ns)
         $display("\n--- TEST 1: Baseline Pulse Sequence (State 10) ---");
-        fire_trigger(80); // Wider than one clk_var period to guarantee capture
-        
+        press_ext_button(120); // Hold >1 clk_var period to guarantee capture
+        verify_trigger_alignment("TEST 1");
         // Wait enough time for all 10 channels to fire (10 * 50ns = 500ns)
         #1000; 
 
@@ -148,7 +177,8 @@ module main_tb;
 
         // 7. Test 3: Fire the new frequency sequence (~50.5 ns)
         $display("\n--- TEST 3: Shifted Pulse Sequence (State 11) ---");
-        fire_trigger(80);
+        press_ext_button(120);
+        verify_trigger_alignment("TEST 3");
         
         // Wait enough time for all 10 channels to fire
         #1000;
@@ -166,7 +196,8 @@ module main_tb;
         if (led4_b && !led4_r && !led4_g) 
             $display("[%0t] System is stable at SUB-BASE state (Blue LED).", $time);
 
-        fire_trigger(80);
+        press_ext_button(120);
+        verify_trigger_alignment("TEST 4");
         #1000;
 
         $display("\n===============================================================");

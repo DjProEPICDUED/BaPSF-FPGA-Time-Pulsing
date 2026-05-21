@@ -3,7 +3,6 @@
 module top (
     input  wire  clk_100mhz,
     input  logic rst,   
-    input  logic trigger,
     input  logic ext_btn_signal,
     
     // Buttons to change frequency (pulse width)
@@ -12,6 +11,12 @@ module top (
     
     output logic [9:0] output_pulse,
     output logic locked,   
+
+    output logic triggerOut1,
+    output logic triggerOut2,
+    output logic triggerOut3,
+    output logic triggerOut4,
+    output logic triggerOut5,
 
     output logic led4_r,
     output logic led4_g,
@@ -168,37 +173,6 @@ module top (
         end
     end
 
-    // Trigger CDC Toggle Synchronizer
-    // Capture the asynchronous external trigger in the fast 100MHz domain first
-    logic trig_meta, trig_sync_100, trig_sync_100_d, trig_toggle;
-
-    always_ff @(posedge clk_100mhz or negedge n_rst_100) begin
-        if (!n_rst_100) begin
-            trig_meta       <= 1'b0;
-            trig_sync_100   <= 1'b0;
-            trig_sync_100_d <= 1'b0;
-            trig_toggle     <= 1'b0;
-        end else begin
-            trig_meta       <= trigger | ext_btn_signal;
-            trig_sync_100   <= trig_meta;
-            trig_sync_100_d <= trig_sync_100;
-            // Generates a toggle event every time a trigger rising edge occurs
-            if (trig_sync_100 & ~trig_sync_100_d) begin
-                trig_toggle <= ~trig_toggle;
-            end
-        end
-    end
-
-    // Safely crosses toggle into the variable clock domain
-    (* ASYNC_REG = "TRUE" *) logic [2:0] trig_tog_sync;
-
-    always_ff @(posedge clk_var_20mhz or negedge n_rst_var) begin
-        if (!n_rst_var) trig_tog_sync <= 3'b000;
-        else trig_tog_sync <= {trig_tog_sync[1:0], trig_toggle};
-    end
-
-    wire var_domain_trigger = trig_tog_sync[2] ^ trig_tog_sync[1];
-
     // Status Signal CDC
     // Synchronize MMCM status signals into the variable domain before gating
     (* ASYNC_REG = "TRUE" *) logic [1:0] locked_sync, srdy_sync;
@@ -216,13 +190,55 @@ module top (
     wire locked_var = locked_sync[1];
     wire srdy_var = srdy_sync[1];
 
+    // External button synchronizer and deterministic trigger generation
+    (* ASYNC_REG = "TRUE" *) logic [1:0] btn_sync;
+    logic btn_sync_d;
+
+    localparam int unsigned TRIG_HOLD_CYCLES = 200_000; // ~10 ms at 20 MHz
+    localparam int unsigned TRIG_HOLD_WIDTH  = $clog2(TRIG_HOLD_CYCLES + 1);
+
+    logic [TRIG_HOLD_WIDTH-1:0] trig_hold_cnt;
+    logic trigger_out_active;
+
+    wire trigger_edge = btn_sync[1] & ~btn_sync_d;
+    wire trigger_fire = trigger_edge & locked_var & srdy_var;
+
+    always_ff @(posedge clk_var_20mhz or negedge n_rst_var) begin
+        if (!n_rst_var) begin
+            btn_sync           <= 2'b00;
+            btn_sync_d         <= 1'b0;
+            trigger_out_active <= 1'b0;
+            trig_hold_cnt      <= '0;
+        end else begin
+            btn_sync   <= {btn_sync[0], ext_btn_signal};
+            btn_sync_d <= btn_sync[1];
+
+            if (trigger_fire) begin
+                trigger_out_active <= 1'b1;
+                trig_hold_cnt      <= TRIG_HOLD_CYCLES - 1;
+            end else if (trigger_out_active) begin
+                if (trig_hold_cnt == 0) begin
+                    trigger_out_active <= 1'b0;
+                end else begin
+                    trig_hold_cnt <= trig_hold_cnt - 1'b1;
+                end
+            end
+        end
+    end
+
+    assign triggerOut1 = trigger_out_active;
+    assign triggerOut2 = trigger_out_active;
+    assign triggerOut3 = trigger_out_active;
+    assign triggerOut4 = trigger_out_active;
+    assign triggerOut5 = trigger_out_active;
+
     // The Pulser Ring Counter
     timePulse #(
         .NUM_CHANNELS(10)
     ) pulser (
         .clk_var      (clk_var_20mhz),
         .n_rst        (n_rst_var),
-        .trigger_sync (var_domain_trigger & locked_var & srdy_var),
+        .trigger_sync (trigger_fire),
         .pulse        (output_pulse)             
     );
 

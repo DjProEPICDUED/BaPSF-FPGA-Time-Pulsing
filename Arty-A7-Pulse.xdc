@@ -9,9 +9,8 @@ set_property -dict { PACKAGE_PIN B9   IOSTANDARD LVCMOS33 } [get_ports { btn_add
 set_property -dict { PACKAGE_PIN B8   IOSTANDARD LVCMOS33 } [get_ports { btn_sub_time }];
 
 ## -----------------------------------------------------------------------------
-## High-Speed Pmod JB (Using Pin 1 for Trigger, Pins 2-3 for outputs 8 & 9)
+## High-Speed Pmod JB (Pins 1-3 used for outputs 8 & 9)
 ## -----------------------------------------------------------------------------
-set_property -dict { PACKAGE_PIN E15   IOSTANDARD LVCMOS33 } [get_ports { trigger }]; 
 set_property -dict { PACKAGE_PIN E16   IOSTANDARD LVCMOS33 SLEW FAST } [get_ports { output_pulse[8] }]; 
 set_property -dict { PACKAGE_PIN D15   IOSTANDARD LVCMOS33 SLEW FAST } [get_ports { output_pulse[9] }]; 
 
@@ -26,6 +25,16 @@ set_property -dict { PACKAGE_PIN U14   IOSTANDARD LVCMOS33 SLEW FAST } [get_port
 set_property -dict { PACKAGE_PIN V14   IOSTANDARD LVCMOS33 SLEW FAST } [get_ports { output_pulse[5] }]; 
 set_property -dict { PACKAGE_PIN T13   IOSTANDARD LVCMOS33 SLEW FAST } [get_ports { output_pulse[6] }]; 
 set_property -dict { PACKAGE_PIN U13   IOSTANDARD LVCMOS33 SLEW FAST } [get_ports { output_pulse[7] }];
+
+## -----------------------------------------------------------------------------
+## Outputs For the output triggers
+## -----------------------------------------------------------------------------
+#3 IO 0 - IO4
+set_property -dict { PACKAGE_PIN V15   IOSTANDARD LVCMOS33 } [get_ports { triggerOut1  }]; 
+set_property -dict { PACKAGE_PIN U16   IOSTANDARD LVCMOS33 } [get_ports { triggerOut2  }]; 
+set_property -dict { PACKAGE_PIN P14   IOSTANDARD LVCMOS33 } [get_ports { triggerOut3  }]; 
+set_property -dict { PACKAGE_PIN T11   IOSTANDARD LVCMOS33 } [get_ports { triggerOut4  }]; 
+set_property -dict { PACKAGE_PIN R12   IOSTANDARD LVCMOS33 } [get_ports { triggerOut5  }]; 
 
 ##-----------------------------------------
 ## RGB LED (LD4)
