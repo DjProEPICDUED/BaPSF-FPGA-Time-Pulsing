@@ -1,0 +1,16 @@
+# compile verilog/system verilog design source files
+verilog xil_defaultlib  --include "../../../../../../../../../../Xilinx/2025.2/Vivado/data/rsb/busdef" --include "../../../../pulser_Viv.ip_user_files/ipstatic" \
+"../../../../pulser_Viv.gen/sources_1/ip/clk_wiz_0/clk_wiz_0_clk_wiz.v" \
+"../../../../pulser_Viv.gen/sources_1/ip/clk_wiz_0/clk_wiz_0.v" \
+"../../../../../BaPSF-FPGA-Time-Pulsing/mmcme2_drp.v" \
+
+sv xil_defaultlib  --include "../../../../../../../../../../Xilinx/2025.2/Vivado/data/rsb/busdef" --include "../../../../pulser_Viv.ip_user_files/ipstatic" \
+"../../../../../BaPSF-FPGA-Time-Pulsing/timePulse.sv" \
+"../../../../../BaPSF-FPGA-Time-Pulsing/top.sv" \
+"../../../../../BaPSF-FPGA-Time-Pulsing/main_tb.sv" \
+
+# compile glbl module
+verilog xil_defaultlib "glbl.v"
+
+# Do not sort compile order
+nosort
