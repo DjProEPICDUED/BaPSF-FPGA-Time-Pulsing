@@ -1,0 +1,14 @@
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Jeanm/Desktop/Courses/BaPsF/pulser_Viv/pulser_Viv.gen/sources_1/ip/clk_wiz_0/clk_wiz_0_clk_wiz.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module clk_wiz_0_clk_wiz
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Jeanm/Desktop/Courses/BaPsF/pulser_Viv/pulser_Viv.gen/sources_1/ip/clk_wiz_0/clk_wiz_0.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module clk_wiz_0
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/Jeanm/Desktop/Courses/BaPsF/BaPSF-FPGA-Time-Pulsing/mmcme2_drp.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module mmcme2_drp
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/Jeanm/Desktop/Courses/BaPsF/BaPSF-FPGA-Time-Pulsing/timePulse.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module timePulse
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/Jeanm/Desktop/Courses/BaPsF/BaPSF-FPGA-Time-Pulsing/top.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module top
+WARNING: [VRFC 10-3380] identifier 'drp_is_ready' is used before its declaration [C:/Users/Jeanm/Desktop/Courses/BaPsF/BaPSF-FPGA-Time-Pulsing/top.sv:141]
+WARNING: [VRFC 10-3380] identifier 'drp_is_ready' is used before its declaration [C:/Users/Jeanm/Desktop/Courses/BaPsF/BaPSF-FPGA-Time-Pulsing/top.sv:146]
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/Jeanm/Desktop/Courses/BaPsF/BaPSF-FPGA-Time-Pulsing/main_tb.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module main_tb
