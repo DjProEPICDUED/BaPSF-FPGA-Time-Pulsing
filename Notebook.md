@@ -1,3 +1,15 @@
+### 5/21:
+Did some additional testing with the oscilloscope and wavegen in the morning and found an issue
+An idea off the top of my head was, have like 5 clks all going at different phases and the first clk to detect the trigger becomes the pulse clock and the rest are ignored. Another idea is to calculate how early the trigger is using TDC then generate a clk that has a phase that compensates for the early trigger using MMCM. 
+From researching the problem a couple methods are: 
+  ISERDES/OSERDES: A hyper fast ring counter + sampling on posedge and negedge. 
+  time to digital converterto measure how early or late the trigger came in, then use combinational carry4s to compensate for known delay or use ODELAY2 to take into account that delay. Problem is TDC is not temperature calibrated but ODELAY2 is. This should be fine as at worst at high temperatures there should be around a 0.3 ns difference which is within the 1 ns goal tolerance. 
+  Use a faster clock (500 MHz wold give 2 ns period which should be around $$\pm$$ 1 ns error)
+
+After some discussion, it was determined for it to be easier for the FPGA to acts the global trigger for the lazer, high speed camera, and other equipment in the lab. The FPGA needs to provide 5 triggers with a 10 ms pulse at 3.3 V. 
+
+This simplifies the problem much more. Now the delay between the trigger and first pulse is always the same and I added outputs from the FPGA to trigger all the other peripherals in the lab. 
+
 ### 5/20:
 Ran simulation in Vivado and got a lot of errors. When one is solved, another appears in its place. Codex deep code review found many critical errors caused primarily by using two different clock domains. Two paths remain: fix the issues and keep using the MMCM dual-clock-domain method, or switch to a single-clock ODELAY/OSERDES method. The MMCM approach might require manual placement of SR latches in the FPGA fabric. ODELAY could change the 50 ns pulse by about ±78.1 ps.
 
