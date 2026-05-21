@@ -16,9 +16,8 @@ On the Arty A7 100T dev board:
     JC PMOD (2rd from the left on the side of dev board) Using all 8 pins for outputs 0 through 7
     JB PMOD (3rd from the left on the side of dev board) Pins 1 & 2 used for outputs 8 & 9
 
-## Purpose:
-FPGA needs to trigger 10 copper cores acting as transmission lines one after the other, providing each with around a 50 ns pulse.
-Overall, the project will be used to measure the strength of the electric field using Stark Spectroscopy in the LAM processing lab at the BaPSF. 
+## Overview:
+The program will be used to measure the strength of the electric field using Stark Spectroscopy in the LAM processing lab at the BaPSF. FPGA needs to trigger 10 copper cores acting as transmission lines one after the other with ~50 ns pulses.
 
-Used for a high-speed multi-channel pulse propagation system using an Arty A7-100T FPGA to generate precisely timed pulses (around 50 ns) that sequentially switch MOSFET-driven coils/channels. User can change pulse in range of 45 - 55 ns in 0.5 ns increments / decrements.
+A high-speed multi-channel pulse propagation system using an Arty A7-100T FPGA to generate precisely timed pulses (around 50 ns) that sequentially switch MOSFET-driven coils/channels. User can change pulse in range of 45 - 55 ns in 0.5 ns increments / decrements.
 
