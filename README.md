@@ -2,13 +2,14 @@
 
 ## How To Use:
 On the Arty A7 100T dev board:
+
 ![Top View](img/topView.png)
 
     BTN 0: Reset
     BTN 1: Trigger
     BTN 2: Increase 50 ns defualt pulse up by 0.5 ns (Max 55 ns pulse)
     BTN 3: Decrease 50 ns defualt pulse up by 0.5 ns (Min 45 ns pulse)
-    IO 0 - IO 4: Outputs for the external triggers (laszers, high speed camera, etc ..)
+    IO 0 - IO 4 (Number 10 in the image): Outputs for the external triggers (laszers, high speed camera, etc ..) 
 
 ![PMOD Side View](img/pmodSide.png)
 
