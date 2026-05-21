@@ -5,14 +5,14 @@ set_property -dict { PACKAGE_PIN E3    IOSTANDARD LVCMOS33 } [get_ports { clk_10
 set_property -dict { PACKAGE_PIN D9    IOSTANDARD LVCMOS33 } [get_ports { rst }];
 ## External Trigger Button (btn 1) 
 set_property -dict { PACKAGE_PIN C9    IOSTANDARD LVCMOS33 } [get_ports { ext_btn_signal }]; 
-set_property -dict { PACKAGE_PIN B9   IOSTANDARD LVCMOS33 } [get_ports { btn_add_time }];
-set_property -dict { PACKAGE_PIN B8   IOSTANDARD LVCMOS33 } [get_ports { btn_sub_time }];
+set_property -dict { PACKAGE_PIN B9    IOSTANDARD LVCMOS33 } [get_ports { btn_add_time }];
+set_property -dict { PACKAGE_PIN B8    IOSTANDARD LVCMOS33 } [get_ports { btn_sub_time }];
 
 ## -----------------------------------------------------------------------------
-## High-Speed Pmod JB (Pins 1-3 used for outputs 8 & 9)
+## High-Speed Pmod JB (Pins 1 and 2 used for outputs 8 & 9)
 ## -----------------------------------------------------------------------------
-set_property -dict { PACKAGE_PIN E16   IOSTANDARD LVCMOS33 SLEW FAST } [get_ports { output_pulse[8] }]; 
-set_property -dict { PACKAGE_PIN D15   IOSTANDARD LVCMOS33 SLEW FAST } [get_ports { output_pulse[9] }]; 
+set_property -dict { PACKAGE_PIN E15   IOSTANDARD LVCMOS33 SLEW FAST } [get_ports { output_pulse[8] }]; 
+set_property -dict { PACKAGE_PIN E16   IOSTANDARD LVCMOS33 SLEW FAST } [get_ports { output_pulse[9] }]; 
 
 ## -----------------------------------------------------------------------------
 ## High-Speed Pmod JC (Using all 8 pins for outputs 0 through 7)

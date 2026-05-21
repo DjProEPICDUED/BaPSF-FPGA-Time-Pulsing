@@ -14,7 +14,7 @@ On the Arty A7 100T dev board:
 ![PMOD Side View](img/pmodSide.png)
 
     JC PMOD (2rd from the left on the side of dev board) Using all 8 pins for outputs 0 through 7
-    JB PMOD (3rd from the left on the side of dev board) Pins 1-3 used for outputs 8 & 9
+    JB PMOD (3rd from the left on the side of dev board) Pins 1 & 2 used for outputs 8 & 9
 
 ## Purpose:
 FPGA needs to trigger 10 copper cores acting as transmission lines one after the other, providing each with around a 50 ns pulse.
