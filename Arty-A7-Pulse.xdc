@@ -1,14 +1,12 @@
 ## Clock signal
 set_property -dict { PACKAGE_PIN E3    IOSTANDARD LVCMOS33 } [get_ports { clk_100mhz }];
 
-## Switches (add5ns and sub5ns)
-set_property -dict { PACKAGE_PIN A8    IOSTANDARD LVCMOS33 } [get_ports { add5ns }];
-set_property -dict { PACKAGE_PIN C11   IOSTANDARD LVCMOS33 } [get_ports { sub5ns }];
-
 ## Buttons (rst) btn 0
 set_property -dict { PACKAGE_PIN D9    IOSTANDARD LVCMOS33 } [get_ports { rst }];
 ## External Trigger Button (btn 1) 
 set_property -dict { PACKAGE_PIN C9    IOSTANDARD LVCMOS33 } [get_ports { ext_btn_signal }]; 
+set_property -dict { PACKAGE_PIN B9   IOSTANDARD LVCMOS33 } [get_ports { btn_add_time }];
+set_property -dict { PACKAGE_PIN B8   IOSTANDARD LVCMOS33 } [get_ports { btn_sub_time }];
 
 ## -----------------------------------------------------------------------------
 ## High-Speed Pmod JB (Using Pin 1 for Trigger, Pins 2-3 for outputs 8 & 9)

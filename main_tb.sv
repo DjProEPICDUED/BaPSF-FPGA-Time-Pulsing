@@ -1,83 +1,178 @@
 `timescale 1ns/1ps
 
 module main_tb;
-	logic clk_100mhz;
-    logic clk_200mhz;
-	logic rst;
-	logic trigger;
-	logic add5ns;
-	logic sub5ns;
-	logic [9:0] output_pulse;
+
+    // =========================================================================
+    // Signals
+    // =========================================================================
+    // Inputs to DUT
+    logic clk_100mhz;
+    logic rst;
+    logic trigger;
+    logic ext_btn_signal;
+    logic btn_add_time;
+    logic btn_sub_time;
+
+    // Outputs from DUT
+    logic [9:0] output_pulse;
     logic locked;
+    logic led4_r;
+    logic led4_g;
+    logic led4_b;
 
-	logic led4_r, led4_g, led4_b;
+    // =========================================================================
+    // Clock Generation (100 MHz)
+    // =========================================================================
+    initial begin
+        clk_100mhz = 1'b0;
+        forever #5 clk_100mhz = ~clk_100mhz; // 10 ns period
+    end
 
-	top dut (
-		.clk_100mhz(clk_100mhz),
-		.rst(rst),
-		.trigger(trigger),
-		.add5ns(add5ns),
-		.sub5ns(sub5ns),
-		.output_pulse(output_pulse),
-        .locked(locked),
+    // =========================================================================
+    // Device Under Test (DUT) Instantiation
+    // =========================================================================
+    top dut (
+        .clk_100mhz     (clk_100mhz),
+        .rst            (rst),
+        .trigger        (trigger),
+        .ext_btn_signal (ext_btn_signal),
+        .btn_add_time   (btn_add_time),
+        .btn_sub_time   (btn_sub_time),
+        .output_pulse   (output_pulse),
+        .locked         (locked),
+        .led4_r         (led4_r),
+        .led4_g         (led4_g),
+        .led4_b         (led4_b)
+    );
 
-		.led4_r(led4_r),
-        .led4_g(led4_g),
-        .led4_b(led4_b)
-	);
+    // =========================================================================
+    // Verification Tasks
+    // =========================================================================
 
-	// 100 MHz clock (10 ns period)
-	initial clk_100mhz = 1'b0;
-	always #5 clk_100mhz = ~clk_100mhz;
+    // Task: Pulse the trigger for a programmable width (ns)
+    task automatic fire_trigger(input int unsigned width_ns);
+        begin
+            $display("[%0t] Firing Trigger for %0d ns...", $time, width_ns);
+            trigger = 1'b1;
+            #(width_ns);
+            trigger = 1'b0;
+            $display("[%0t] Trigger released. Waiting for pulse sequence...", $time);
+        end
+    endtask
 
-	// 200 MHz clock (5 ns period)
-	initial clk_200mhz = 1'b0;
-	always #2.5 clk_200mhz = ~clk_200mhz;
+    // Task: Press the "Add Time" button with a realistic hold time
+    task automatic press_add_button();
+        begin
+            $display("[%0t] Pressing ADD TIME button...", $time);
+            btn_add_time = 1'b1;
+            #50; // Hold long enough for the 100MHz synchronizer to catch it cleanly
+            btn_add_time = 1'b0;
+        end
+    endtask
 
-	initial begin
-		rst = 1'b0;
-		trigger = 1'b0;
-		add5ns = 1'b0;
-		sub5ns = 1'b0;
+    // Task: Press the "Sub Time" button with a realistic hold time
+    task automatic press_sub_button();
+        begin
+            $display("[%0t] Pressing SUB TIME button...", $time);
+            btn_sub_time = 1'b1;
+            #50;
+            btn_sub_time = 1'b0;
+        end
+    endtask
 
-		#50;
-		rst = 1'b1;
+    // =========================================================================
+    // Main Test Sequence
+    // =========================================================================
+    initial begin
+        // Waveform dump for simulators that support VCD
+        $dumpfile("main_tb.vcd");
+        $dumpvars(0, main_tb);
 
-        @(posedge locked);
-		#100;
+        $display("===============================================================");
+        $display(" Starting Simulation: Variable Frequency Ring Counter Testbench");
+        $display("===============================================================");
 
-		trigger = 1'b1;
-		#10;
-		trigger = 1'b0;
+        // 1. Initialize all inputs
+        rst            = 1'b1; // Assert reset
+        trigger        = 1'b0;
+        ext_btn_signal = 1'b0;
+        btn_add_time   = 1'b0;
+        btn_sub_time   = 1'b0;
 
-		#1000;
+        // 2. Power-on reset sequence
+        #100;
+        $display("[%0t] Releasing Reset...", $time);
+        rst = 1'b0;
 
-		// Second run: add 5 ns
-		add5ns = 1'b1;
-		trigger = 1'b1;
-		#20;
-		trigger = 1'b0;
-		add5ns = 1'b0;
+        // Give the system a few cycles after reset release
+        #100;
 
-		#1200;
+        // 3. Wait for the MMCM to achieve initial lock
+        $display("[%0t] Waiting for MMCM lock...", $time);
+        wait(locked == 1'b1);
+        $display("[%0t] MMCM Locked!", $time);
 
-		// Third run: sub 5 ns
-		sub5ns = 1'b1;
-		trigger = 1'b1;
-		#20;
-		trigger = 1'b0;
-		sub5ns = 1'b0;
+        // 4. Wait for the initial DRP state machine to settle
+        // The DRP controller executes ~23 cycles upon startup to load State 10
+        #2000; 
+        
+        if (led4_r && led4_g && led4_b) 
+            $display("[%0t] System is stable at BASE state (White LED).", $time);
+        else 
+            $error("[%0t] LED status incorrect on startup!", $time);
 
-		#1200;
+        // 5. Test 1: Fire the base frequency sequence (50.0 ns)
+        $display("\n--- TEST 1: Baseline Pulse Sequence (State 10) ---");
+        fire_trigger(80); // Wider than one clk_var period to guarantee capture
+        
+        // Wait enough time for all 10 channels to fire (10 * 50ns = 500ns)
+        #1000; 
 
-		$finish;
-	end
+        // 6. Test 2: Dynamic Reconfiguration (Shift to State 11)
+        $display("\n--- TEST 2: Dynamic Reconfiguration (+0.5 ns) ---");
+        press_add_button();
+        
+        // Wait for the DRP to drop the lock, write the new hex values, and re-lock
+        // Note: Simulation IP takes time to re-lock.
+        wait(locked == 1'b0);
+        $display("[%0t] MMCM unlocked, shifting frequency...", $time);
+        
+        wait(locked == 1'b1);
+        $display("[%0t] MMCM Re-locked at new frequency!", $time);
+        
+        // Give the state machine a moment to assert drp_srdy
+        #1000; 
 
-	// Basic pulse activity log
-	always @(output_pulse) begin
-		if (output_pulse != 10'b0) begin
-			$display("%0t ns : output_pulse = %b", $time, output_pulse);
-		end
-	end
+        if (led4_g && !led4_r && !led4_b) 
+            $display("[%0t] System is stable at SHIFTED state (Green LED).", $time);
+
+        // 7. Test 3: Fire the new frequency sequence (~50.5 ns)
+        $display("\n--- TEST 3: Shifted Pulse Sequence (State 11) ---");
+        fire_trigger(80);
+        
+        // Wait enough time for all 10 channels to fire
+        #1000;
+
+        // 8. Test 4: Shift downwards (Return to State 10, then to State 9)
+        $display("\n--- TEST 4: Downward Shift (-1.0 ns total) ---");
+        press_sub_button(); // Go down to State 10
+        #2000;              // Wait for shift
+        press_sub_button(); // Go down to State 9
+        
+        wait(locked == 1'b0);
+        wait(locked == 1'b1);
+        #1000;
+
+        if (led4_b && !led4_r && !led4_g) 
+            $display("[%0t] System is stable at SUB-BASE state (Blue LED).", $time);
+
+        fire_trigger(80);
+        #1000;
+
+        $display("\n===============================================================");
+        $display(" Simulation Complete.");
+        $display("===============================================================");
+        $finish;
+    end
 
 endmodule
