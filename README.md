@@ -43,6 +43,6 @@ On the Arty A7 100T dev board:
 
 ![Waveforms Showing Program Running As Intended](img/Waveforms.png)
 
-![Pic of oscilloscope showing first pulse and triggers all starting on the same posedge](img/oscilloscope.png)
+![Pic of oscilloscope showing first pulse and triggers all starting on the same posedge](img/oscilloscope.jpeg)
 
 
