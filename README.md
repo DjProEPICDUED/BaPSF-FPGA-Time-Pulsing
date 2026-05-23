@@ -41,7 +41,13 @@ On the Arty A7 100T dev board:
 - Xilinx Artix-7 FPGA development
 - Constraint management with XDC
 
+## Images
+
+Waveforms captured from testbench ran in Xilinx Vivado 
+
 ![Waveforms Showing Program Running As Intended](img/Waveforms.png)
+
+Physically testing the FPGA with an oscilloscope to make sure the real world performance matches the simulation. Additionally, there were concerns that the traces on the FPGA PCB dev board could have parasitic capacitance and EMI at such fast frequenies. 
 
 ![Pic of oscilloscope showing first pulse and triggers all starting on the same posedge](img/oscilloscope.jpeg)
 
