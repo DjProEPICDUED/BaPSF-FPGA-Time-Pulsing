@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 
 module timePulse #(
-    parameter int unsigned NUM_CHANNELS = 10
+    parameter int unsigned NUM_CHANNELS = 15
 )(
     input  logic clk_var,       
     input  logic n_rst,         
